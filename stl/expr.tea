@@ -1,0 +1,93 @@
+[[ stl ]]
+
+// expr.tea
+//
+// MIT License
+//
+// Copyright (c) 2021 Ferhat Geçdoğan All Rights Reserved.
+// Distributed under the terms of the MIT License.
+//
+//
+
+import tea.green.char
+import tea.green.string
+import tea.green.type
+import tea.green.fmt
+
+enum ExprOp = int32 {
+    Plus  = 43,
+    Minus = 45,
+    Multi = 42,
+    Div   = 47,
+    Undefined
+}
+
+module expr {
+    fn expr#eval(data: string) = int32 {
+        var mut back : int32   = 0
+        var mut front: int32   = 0
+        var mut value: int32   = 0
+        var mut is_back = false
+
+        var mut last: ExprOp = Undefined
+
+        for ch in data {
+            if ch#is_digit(ch) {
+                if !is_back && last == Undefined {
+                    back = ch - '0'
+                    is_back = true
+                } else {
+                    front = ch - '0'
+
+                    if last == Plus {
+                        if value == 0 {
+                            value = back + front
+                        } else {
+                            value += front
+                        }
+                    }
+                    else if last == Minus {
+                        if value == 0 {
+                            value = back - front
+                        } else {
+                            value -= front
+                        }
+                    }
+                    else if last == Multi {
+                        if value == 0 {
+                            value = back * front
+                        } else {
+                            value *= front
+                        }
+                    }
+                    else if last == Div {
+                        if value == 0 {
+                            value = back / front
+                        } else {
+                            value /= front
+                        }
+                    }
+
+                    back    = 0
+                    front   = 0
+                    is_back = false
+                    last    = Undefined
+                }
+                    continue
+            }
+
+            if (int)ch == Plus {
+                last = Plus
+            }
+            else if (int)ch == Minus {
+                last = Minus
+            }
+            else if (int)ch == Multi {
+                last = Multi
+            }
+            else if (int)ch == Div {
+                last = Div
+            }
+        } . value
+    }
+} // expr
